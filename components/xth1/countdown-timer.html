@@ -1,0 +1,81 @@
+  <polymer-element name="countdown-timer" attributes="duration updateRate" on-stop-timer="{{stop}}" on-start-timer="{{start}}">
+    <template>
+      <div class='panel panel-primary green-theme'>
+          <div class='panel-heading'><span>Timer </span></div>
+          <div class='panel-body'>
+            <div id="countDown" class="alert alert-info cat-name theme-bg ">{{time_field}} remaining</div> 
+          </div>
+        </div>
+      </div>
+    </template>
+    <script>
+      Polymer('countdown-timer', {
+        // Parameters
+        time_remaning_int: 0,
+        duration_int: 0,
+        update_rate_int: 0,
+        is_runing: false,
+        time_field: 0,
+        ready: function() {
+          console.log("Ready: ");
+          this.clear();
+
+          // debug
+          //this.start();
+        },
+        start: function() {
+          console.log('timer start');
+          if(this.is_runing == true) {
+            return false;
+          }
+          this.is_runing = true;
+          this.time_remaning_int = this.duration_int;
+          this.updateTimer();
+        },
+
+        stop: function() {
+          this.is_runing = false;
+          var score = this.time_remaning_int / 10;
+          console.log('Stop timer : '+score);
+          return score;
+        },
+
+        clear: function() {
+          this.is_runing = false;
+          this.time_remaning_int = 0;
+          this.duration_int = 0;
+          this.update_rate_int = 0;
+
+          this.duration_int = parseInt(this.duration);
+          this.update_rate_int = parseInt(this.updateRate);
+        },
+
+        updateTimer: function() {
+          if (this.is_runing == false) {
+            return;
+          }
+          this.time_remaning_int -= this.update_rate_int;
+          //console.log('time_remaning_int '  + this.time_remaning_int);
+          if(this.time_remaning_int > 0){
+            this.async(this.updateTimer, null, this.update_rate_int); 
+          } else {
+            this.time_remaning_int = 0;
+            this.clear();
+            // timeout event
+            this.fire('timeout');
+          }
+          this.updateTimeField();
+        },
+        updateTimeField: function() {
+          this.time_field = this.getTimeSeconds();
+        },
+        getTimeSeconds: function() {
+          var time_seconds = parseFloat(this.time_remaning_int) / 1000.0;
+          time_seconds = time_seconds.toFixed(3);
+          return time_seconds;
+        }
+        
+      });
+
+    </script>
+  </polymer-element>

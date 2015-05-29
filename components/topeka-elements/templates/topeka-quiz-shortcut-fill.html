@@ -1,0 +1,134 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../topeka-quiz-base.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../xth1/countdown-timer.html">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap-record.min.js"></script>
+
+<script src="./shortcuts_scripts/shortcut.js"></script>
+
+<polymer-element name="topeka-quiz-shortcut-fill" extends="topeka-quiz-base">
+<template>
+
+  <style>
+  
+    :host {
+       padding: 40px;
+    }
+    
+    :host-context(.wide) {
+      width: 304px;
+      margin: 0 auto;
+    }
+  
+    paper-input {
+      width: 100%;
+      height: 48px;
+    }
+    
+  </style>
+  
+  <!--<div>{{quiz.start}}</div>
+  <core-toolbar class="dark-theme">
+    <div>
+      <span>{{shortcut_message}}</span>
+    </div>
+  </core-toolbar> -->
+  <countdown-timer id='timer' duration='10000' updateRate='10' on-timeout='{{timeout}}'></countdown-timer>
+  <paper-input id='input_text'value="{{value}}" label="{{shortcut_message}}" on-keypress = 'keyPress'></paper-input>
+  </body>
+  <div>{{quiz.end}}</div>
+
+</template>
+<script>
+  
+  Polymer('topeka-quiz-shortcut-fill', {
+    //Atributtes
+    shortcut_message: 'Type your shortcut',
+    is_active: false,
+    curr_score: 0,
+    eventDelegates: {
+      'input': 'answered'
+    },
+    ready: function() {
+      this.addKeyDownListener();
+    },
+    initQuiz: function() {
+      console.log('Init quiz');
+      //this.fire('quiz-answered');
+    },
+    startShowQuiz: function() {
+      console.log('start quiz on QUIZ!!!!!!');
+      // Set value for some attributes
+      this.is_active = true;
+      this.curr_score = 0;
+
+      this.startRecordingKeys();
+      this.$.timer.fire('start-timer');
+    },
+    startRecordingKeys: function() {
+      var obj = this;
+      Mousetrap.record(function(sequence) {
+          console.log('You pressed: ' + sequence.join(' '));
+          console.log("value " + this.value);
+          console.log("callback: " + obj);
+
+          if (obj.is_active) {
+            obj.fire('quiz-answered');
+            obj.value = sequence.join(' ');
+            obj.fire('quiz-next');
+          }
+      });
+    },
+    isCorrect: function() {
+      console.log("debug");
+      return this.areEqual(this.value, this.quiz.answer);
+    },
+    areEqual: function(s1, s2) {
+      return s1 && s2 && s1.trim().toLowerCase() === s2.trim().toLowerCase();
+    },
+    addKeyDownListener: function() {
+      var obj = this;
+      window.addEventListener("keydown", function() {
+        console.log("Keydown, this.is_active " + obj.is_active);
+        if (obj.is_active) {
+          //obj.$.timer.fire('stop-timer');
+          obj.curr_score = obj.$.timer.stop();
+          console.log('Curr Score: ' +obj.curr_score);
+          obj.shortcut_message = 'You started to type';
+        }
+      });
+    },
+    //overwrite the default function
+    getScore: function() {
+      return this.isCorrect() ? (this.curr_score) : 0;
+    },
+    // Event handlers
+    timeout: function() {
+      console.log('timeout');
+      this.fire('quiz-answered');
+      this.value = 'timeout';
+      this.fire('quiz-next');
+    },
+    keyDown: function(e) {
+      //e.preventDefault();   
+    },
+    keyPress: function(e) { // key press from input
+      console.log('key press');
+      this.shortcut_message = 'Your start typing!';
+    }
+  });
+
+</script>
+</polymer-element>

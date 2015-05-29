@@ -1,0 +1,24 @@
+[
+    {
+        "name": "Shortcut Racer",
+        "id": "knowledge",
+        "theme": "green",
+        "quizzes": [
+            {
+                "type": "shortcut-fill",
+                "question": "What is shortcut for the help section?",
+                "answer": "ctrl+h"
+            },
+            {
+                "type": "shortcut-fill",
+                "question": "What is shortcut for finding in a document?",
+                "answer": "ctrl+f"
+            },
+            {
+                "type": "shortcut-fill",
+                "question": "What is shortcut for save a document?",
+                "answer": "ctrl+s"
+            }
+        ]
+    }
+]

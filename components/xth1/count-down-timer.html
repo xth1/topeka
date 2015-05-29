@@ -1,0 +1,23 @@
+  <polymer-element name="countdown-timer">
+    <template>
+      <div id="countDown">{{count}}</div> 
+    </template>
+    <script>
+      Polymer('countdown-timer', {
+        ready: function() {
+          this.nextCount();
+        },
+        
+        nextCount: function(){
+          this.count--;
+          
+          if(this.count > 0){
+            this.async(this.nextCount, null, 1000); 
+          }
+        },
+        
+        count: 100
+      });
+
+    </script>
+  </polymer-element>
